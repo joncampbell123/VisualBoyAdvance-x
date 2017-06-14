@@ -47,7 +47,7 @@ extern "C" {
 #define _stricmp strcasecmp
 #endif // ! _MSC_VER
 
-static int (*utilGzWriteFunc)(gzFile, const voidp, unsigned int) = NULL;
+static int (*utilGzWriteFunc)(gzFile, voidpc, unsigned int) = NULL;
 static int (*utilGzReadFunc)(gzFile, voidp, unsigned int) = NULL;
 static int (*utilGzCloseFunc)(gzFile) = NULL;
 
@@ -478,7 +478,7 @@ bool utilIsGBAImage(const char * file)
 {
   cpuIsMultiBoot = false;
   if(strlen(file) > 4) {
-    char * p = strrchr(file,'.');
+    char * p = strrchr((char*)file,'.');
 
     if(p != NULL) {
       if(_stricmp(p, ".gba") == 0)
@@ -502,7 +502,7 @@ bool utilIsGBAImage(const char * file)
 bool utilIsGBImage(const char * file)
 {
   if(strlen(file) > 4) {
-    char * p = strrchr(file,'.');
+    char * p = strrchr((char*)file,'.');
 
     if(p != NULL) {
       if(_stricmp(p, ".gb") == 0)
@@ -522,7 +522,7 @@ bool utilIsGBImage(const char * file)
 bool utilIsZipFile(const char *file)
 {
   if(strlen(file) > 4) {
-    char * p = strrchr(file,'.');
+    char * p = strrchr((char*)file,'.');
 
     if(p != NULL) {
       if(_stricmp(p, ".zip") == 0)
@@ -552,7 +552,7 @@ bool utilIsRarFile(const char *file)
 bool utilIsGzipFile(const char *file)
 {
   if(strlen(file) > 3) {
-    char * p = strrchr(file,'.');
+    char * p = strrchr((char*)file,'.');
 
     if(p != NULL) {
       if(_stricmp(p, ".gz") == 0)
@@ -984,7 +984,7 @@ void utilWriteData(gzFile gzFile, variable_desc *data)
 
 gzFile utilGzOpen(const char *file, const char *mode)
 {
-  utilGzWriteFunc = (int (*)(void *,void * const, unsigned int))gzwrite;
+  utilGzWriteFunc = gzwrite;
   utilGzReadFunc = gzread;
   utilGzCloseFunc = gzclose;
 
@@ -993,7 +993,7 @@ gzFile utilGzOpen(const char *file, const char *mode)
 
 gzFile utilMemGzOpen(char *memory, int available, char *mode)
 {
-  utilGzWriteFunc = memgzwrite;
+  utilGzWriteFunc = (int (*)(gzFile, voidpc, unsigned int))memgzwrite;
   utilGzReadFunc = memgzread;
   utilGzCloseFunc = memgzclose;
 
